@@ -130,7 +130,6 @@ app.post("/todos/", async (request, response) => {
                 VALUES
                     (${id}, '${todo}', '${category}','${priority}', '${status}', '${postNewDueDate}');`;
         await database.run(postTodoQuery);
-        //console.log(responseResult);
         response.send("Todo Successfully Added");
       }
     }
