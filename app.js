@@ -22,6 +22,19 @@ const initializeDBandServer = async () => {
 initializeDBandServer();
 
 //API 1
+const hasPriorityAndStatusProperties = (requestQuery) => {
+  return (
+    requestQuery.priority !== undefined && requestQuery.status !== undefined
+  );
+};
+
+const hasPriorityProperty = (requestQuery) => {
+  return requestQuery.priority !== undefined;
+};
+
+const hasStatusProperty = (requestQuery) => {
+  return requestQuery.status !== undefined;
+};
 
 const outPutResult = (dbObject) => {
   return {
@@ -41,69 +54,57 @@ app.get("/todos/", async (request, response) => {
 app.get("/todos/", async (request, response) => {
   let data = null;
   let getTodosQuery = "";
-  const { search_q = "", status } = request.query;
+  const { search_q = "", priority, status } = request.query;
 
   switch (true) {
-    //scenario 1
-    case hasStatusProperty(request.query):
-      if (status === "TO DO" || status === "IN PROGRESS" || status === "DONE") {
-        getTodosQuery = `SELECT * FROM todo WHERE status = '${status}';`;
-        data = await database.all(getTodosQuery);
-        response.send(data.map((eachItem) => outPutResult(eachItem)));
-      } else {
-        response.status(400);
-        response.send("Invalid Todo Status");
-      }
-      break;
-
-    //scenario 2
-
-    case hasPriorityProperty(request.query):
-      if (priority === "HIGH" || priority === "MEDIUM" || priority === "LOW") {
-        getTodosQuery = `
-      SELECT * FROM todo WHERE priority = '${priority}';`;
-        data = await database.all(getTodosQuery);
-        response.send(data.map((eachItem) => outPutResult(eachItem)));
-      } else {
-        response.status(400);
-        response.send("Invalid Todo Priority");
-      }
-      break;
-
-    //scenario 3
-
+    //SCENARIO 1
     case hasPriorityAndStatusProperties(request.query):
-      if (priority === "HIGH" || priority === "MEDIUM" || priority === "LOW") {
-        if (
-          status === "TO DO" ||
-          status === "IN PROGRESS" ||
-          status === "DONE"
-        ) {
-          getTodosQuery = `
-      SELECT * FROM todo  WHERE status = '${status}' AND priority = '${priority}';`;
-          data = await database.all(getTodosQuery);
-          response.send(data.map((eachItem) => outPutResult(eachItem)));
-        } else {
-          response.status(400);
-          response.send("Invalid Todo Status");
-        }
-      } else {
-        response.status(400);
-        response.send("Invalid Todo Priority");
-      }
-
+      getTodosQuery = `
+   SELECT
+    *
+   FROM
+    todo 
+   WHERE
+    todo LIKE '%${search_q}%'
+    AND status = '${status}'
+    AND priority = '${priority}';`;
       break;
-
-    //scenario 4
-
-    case hasSearchProperty(request.query):
-      getTodosQuery = `select * from todo where todo like '%${search_q}%';`;
-      data = await database.all(getTodosQuery);
-      response.send(data.map((eachItem) => outPutResult(eachItem)));
+    //SCENARIO2
+    case hasPriorityProperty(request.query):
+      getTodosQuery = `
+   SELECT
+    *
+   FROM
+    todo 
+   WHERE
+    todo LIKE '%${search_q}%'
+    AND priority = '${priority}';`;
       break;
+    //SCENARIO3
+    case hasStatusProperty(request.query):
+      getTodosQuery = `
+   SELECT
+    *
+   FROM
+    todo 
+   WHERE
+    todo LIKE '%${search_q}%'
+    AND status = '${status}';`;
+      break;
+    //SCENARIO4
+    default:
+      getTodosQuery = `
+   SELECT
+    *
+   FROM
+    todo 
+   WHERE
+    todo LIKE '%${search_q}%';`;
   }
-});
 
+  data = await database.all(getTodosQuery);
+  response.send(data);
+});
 // API 2
 
 app.get("/todos/:todoId/", async (request, response) => {
@@ -117,23 +118,13 @@ app.get("/todos/:todoId/", async (request, response) => {
 
 app.post("/todos/", async (request, response) => {
   const { id, todo, priority, status } = request.body;
-  if (priority === "HIGH" || priority === "LOW" || priority === "MEDIUM") {
-    if (status === "TO DO" || status === "IN PROGRESS" || status === "DONE") {
-      if (
-        category === "WORK" ||
-        category === "HOME" ||
-        category === "LEARNING"
-      ) {
-        const postTodoQuery = `
+  const postTodoQuery = `
                 INSERT INTO
-                    todo (id, todo, category,priority, status, due_date)
+                    todo (id, todo,priority, status)
                 VALUES
-                    (${id}, '${todo}', '${category}','${priority}', '${status}', '${postNewDueDate}');`;
-        await database.run(postTodoQuery);
-        response.send("Todo Successfully Added");
-      }
-    }
-  }
+                    (${id}, '${todo}',${priority}', '${status}');`;
+  await database.run(postTodoQuery);
+  response.send("Todo Successfully Added");
 });
 
 //API4
