@@ -2,9 +2,9 @@ const express = require("express");
 const path = require("path");
 const { open } = require("sqlite");
 const sqlite3 = require("sqlite3");
-const format = require("date-fns/format");
-const isMatch = require("date-fns/isMatch");
-var isValid = require("date-fns/isValid");
+//const format = require("date-fns/format");
+//const isMatch = require("date-fns/isMatch");
+//var isValid = require("date-fns/isValid");
 const app = express();
 app.use(express.json());
 
@@ -24,7 +24,6 @@ const initializeDBandServer = async () => {
   }
 };
 initializeDBandServer();
-
 
 //API 1
 
@@ -77,10 +76,10 @@ app.get("/todos/", async (request, response) => {
   let data = null;
   let getTodosQuery = "";
   const { search_q = "", priority, status, category } = request.query;
- 
+
   switch (true) {
     //scenario 3
-    
+
     case hasPriorityAndStatusProperties(request.query):
       if (priority === "HIGH" || priority === "MEDIUM" || priority === "LOW") {
         if (
@@ -104,7 +103,7 @@ app.get("/todos/", async (request, response) => {
       break;
 
     //scenario 5
-    
+
     case hasCategoryAndStatus(request.query):
       if (
         category === "WORK" ||
@@ -158,7 +157,7 @@ app.get("/todos/", async (request, response) => {
       break;
 
     //scenario 2
-    
+
     case hasPriorityProperty(request.query):
       if (priority === "HIGH" || priority === "MEDIUM" || priority === "LOW") {
         getTodosQuery = `
@@ -172,7 +171,7 @@ app.get("/todos/", async (request, response) => {
       break;
 
     //scenario 1
-    
+
     case hasStatusProperty(request.query):
       if (status === "TO DO" || status === "IN PROGRESS" || status === "DONE") {
         getTodosQuery = `SELECT * FROM todo WHERE status = '${status}';`;
@@ -371,8 +370,8 @@ app.put("/todos/:todoId/", async (request, response) => {
       break;
   }
 
-  eTodoQuery);
-  response.send(`${updateColumn} Updated`);*/
+  // eTodoQuery);
+  response.send(`${updateColumn} Updated`); /**/
 });
 
 //API 6
