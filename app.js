@@ -28,6 +28,7 @@ const initializeDbAndServer = async () => {
 };
 
 initializeDbAndServer();
+//API 1
 
 const hasPriorityAndStatusProperties = (requestQuery) => {
   return (
@@ -48,7 +49,7 @@ app.get("/todos/", async (request, response) => {
   const { search_q = "", priority, status } = request.query;
 
   switch (true) {
-    case hasPriorityAndStatusProperties(request.query):
+    case hasPriorityAndStatusProperties(request.query): //SCENARIO 1
       getTodosQuery = `
       SELECT
         *
@@ -59,7 +60,7 @@ app.get("/todos/", async (request, response) => {
         AND status = '${status}'
         AND priority = '${priority}';`;
       break;
-    case hasPriorityProperty(request.query):
+    case hasPriorityProperty(request.query): //SCENARIO 2
       getTodosQuery = `
       SELECT
         *
@@ -69,7 +70,7 @@ app.get("/todos/", async (request, response) => {
         todo LIKE '%${search_q}%'
         AND priority = '${priority}';`;
       break;
-    case hasStatusProperty(request.query):
+    case hasStatusProperty(request.query): //SCENARIO 3
       getTodosQuery = `
       SELECT
         *
@@ -80,6 +81,7 @@ app.get("/todos/", async (request, response) => {
         AND status = '${status}';`;
       break;
     default:
+      //SCENARIO 4
       getTodosQuery = `
       SELECT
         *
@@ -92,6 +94,8 @@ app.get("/todos/", async (request, response) => {
   data = await database.all(getTodosQuery);
   response.send(data);
 });
+
+//API 2
 
 app.get("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
@@ -107,6 +111,7 @@ app.get("/todos/:todoId/", async (request, response) => {
   response.send(todo);
 });
 
+//API3
 app.post("/todos/", async (request, response) => {
   const { id, todo, priority, status } = request.body;
   const postTodoQuery = `
@@ -118,18 +123,20 @@ app.post("/todos/", async (request, response) => {
   response.send("Todo Successfully Added");
 });
 
+//API 4
+
 app.put("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
   let updateColumn = "";
   const requestBody = request.body;
   switch (true) {
-    case requestBody.status !== undefined:
+    case requestBody.status !== undefined: //SCENARIO 1
       updateColumn = "Status";
       break;
-    case requestBody.priority !== undefined:
+    case requestBody.priority !== undefined: //SCENARIO 2
       updateColumn = "Priority";
       break;
-    case requestBody.todo !== undefined:
+    case requestBody.todo !== undefined: //SCENARIO 3
       updateColumn = "Todo";
       break;
   }
@@ -162,6 +169,7 @@ app.put("/todos/:todoId/", async (request, response) => {
   response.send(`${updateColumn} Updated`);
 });
 
+//API 5
 app.delete("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
   const deleteTodoQuery = `

@@ -1,49 +1,62 @@
-//scenario 1 
+//API1 
+//SCENARIO 1 
+
 GET http://localhost:3000/todos/?status=TO%20DO
-###
-
-//scenario 2 
-GET http://localhost:3000/todos/?priority=HIGH
-
-###
-//scenario3
-GET http://localhost:3000/todos/?priority=HIGH&status=IN%20PROGRESS
 
 ### 
-//scenario 4 
+//SCENARIO 2 
+GET http://localhost:3000/todos/?priority=HIGH 
+###
+//SCENARIO 3 
 
+GET http://localhost:3000/todos/?priority=HIGH&status=IN%20PROGRESS
+
+###
+//SCENARIO 4 
 GET http://localhost:3000/todos/?search_q=Play
 ###
 //API2
-GET http://localhost:3000/todos/
 
-### 
-
-//API3 
-POST http://localhost:3000/todos/2
+GET http://localhost:3000/todos/10/
 
 ###
 
+//API 3 
+POST http://localhost:3000/todos/
+Content-Type:application/json
+
+{
+  "id": 10,
+  "todo": "Finalize event theme",
+  "priority": "LOW",
+  "status": "TO DO"
+}
+
+###
 //API4 
-//SCENARIO1 
-PUT http://localhost:3000/todos/
-### 
-//scenario 2 
-PUT http://localhost:3000/todos/
+//SCENARIO 1 
+PUT http://localhost:3000/todos/2/
+Content-Type:application/json
 
+{
+  "status": "DONE"
+}
 ###
+//SCENARIO 2 
+PUT http://localhost:3000/todos/2/
+Content-Type:application/json
 
-//scenario 3 
-PUT http://localhost:3000/todos/
-
-### 
+{
+  "priority": "HIGH"
+}
+###
+//SCENARIO 3 
+PUT http://localhost:3000/todos/2/
+Content-Type:application/json
+ 
+{
+ "todo": "Some task"
+}
+###
 //API5 
-DELETE http://localhost:3000/todos/
-
-
-
-
-
-
-
-
+DELETE http://localhost:3000/todos/3/
